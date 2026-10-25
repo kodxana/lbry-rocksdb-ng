@@ -61,7 +61,11 @@ jobs:
           path: ci-results/python3.13
       - name: Verify databases and write batches across Python versions
         shell: bash
-        run: sh scripts/test-compatibility.sh 2>&1 | tee ci-results/compatibility.log
+        run: |
+          wheel=lbry_rocksdb_ng-0.8.3-cp313-cp313-manylinux_2_35_x86_64.whl
+          curl --fail --location --retry 3 -o "$wheel" "https://github.com/kodxana/lbry-rocksdb-ng/releases/download/v0.8.3/$wheel"
+          echo "9e905f44895e0815ef6e803da964ee648cfd970cc2621003a92bc822875e3e72  $wheel" | sha256sum -c -
+          sh scripts/test-compatibility.sh "$wheel" 2>&1 | tee ci-results/compatibility.log
       - name: Upload compatibility log
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

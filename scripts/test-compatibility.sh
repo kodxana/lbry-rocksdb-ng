@@ -17,6 +17,10 @@ for version in 3.9 3.13; do
 done
 
 image_dir=$(mktemp -d)
+mkdir "$image_dir/baseline"
+if [ -n "$baseline" ]; then
+    cp "$baseline" "$image_dir/baseline/"
+fi
 volume=
 container=
 cleanup() {
@@ -26,7 +30,8 @@ cleanup() {
     if [ -n "$volume" ]; then
         docker volume rm "$volume" >/dev/null
     fi
-    rm -f "$image_dir/39" "$image_dir/313"
+    rm -f "$image_dir/39" "$image_dir/313" "$image_dir/baseline/"*
+    rmdir "$image_dir/baseline"
     rmdir "$image_dir"
 }
 trap cleanup EXIT
@@ -57,9 +62,7 @@ run_step() {
             python /tmp/persistence.py "$@"
         ' sh "$action" "/data/$database" --compression "$compression")
     if [ "$version" = baseline ]; then
-        docker cp "$baseline" "$container:/tmp/$(basename "$baseline")"
-        # The interpreter is already selected above; install the released wheel offline.
-        docker start "$container" >/dev/null
+        docker cp "$image_dir/baseline" "$container:/tmp/wheels"
     else
         docker cp "$output_dir/python$version" "$container:/tmp/wheels"
     fi
