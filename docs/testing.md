@@ -20,9 +20,15 @@ binding uses GCC 10 on Python 3.9 and GCC 12 on Python 3.13.
 `docker/test-requirements.txt` pins CMake, packaging tools, and pytest, with
 Cython 0.29.37 on Python 3.9 and Cython 3.1.8 on Python 3.13.
 The RocksDB submodule remains at `752fea5d4400198bc8a591b7d795d1c8d5f12230`
-(6.25.3). Its compression-library versions and SHA-256 checks are unchanged;
-zlib 1.2.12 is fetched from the upstream HTTPS archive. This is a historical
-compatibility baseline, not an upgrade of those native libraries.
+(6.25.3). The parent Makefile overrides its LZ4 build to 1.10.0 and builds
+zlib 1.3.2 with the upstream fix for CVE-2026-85091 from commit
+`df84af25dc1942490e1d1c899a07619152a46148`. Both archives are SHA-256 checked.
+This fixes the older LZ4 and zlib advisories without changing the database
+engine. zlib's own test suite also runs during the native build.
+
+Python 3.13 uses setuptools 84.1.0. Python 3.9 retains its last compatible
+80.9.0 build tool: the newer release requires Python 3.10. Its Windows-only
+legacy wheel-installation advisory does not apply to this Linux build path.
 
 The build uses two compiler jobs by default (`JOBS=4 sh scripts/test.sh` changes
 that limit). RocksDB is built with `PORTABLE=ON` to avoid selecting instructions
@@ -67,6 +73,10 @@ well. The two directions use separate databases on a temporary Docker volume,
 removed on exit. Each step is limited to two CPUs, 2 GiB, and two minutes; CI has
 a 15-minute job timeout. For custom artifact locations, set `TEST_OUTPUT_DIR` to
 the parent containing `python3.9/` and `python3.13/` when running this script.
+Every direction exercises Snappy, zlib, LZ4, LZ4HC and Zstandard SST files.
+Pass the released Python 3.13 wheel as an optional argument to also check
+upgrade and downgrade compatibility with it. CI downloads and hash-verifies
+the 0.8.3 wheel for this check; test containers remain offline.
 
 CI establishes Linux x86-64 behavior on standard CPython 3.9 and 3.13 builds.
 Auditwheel checks and repairs the wheels before they are installed and tested.

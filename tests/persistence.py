@@ -17,10 +17,11 @@ def initial_rows():
     return rows
 
 
-def open_db(path, create=False):
-    options = rocksdb.Options(create_if_missing=create, compression=rocksdb.CompressionType.snappy_compression)
+def open_db(path, create=False, compression='snappy'):
+    codec = getattr(rocksdb.CompressionType, compression + '_compression')
+    options = rocksdb.Options(create_if_missing=create, compression=codec)
     families = {
-        b'index': rocksdb.ColumnFamilyOptions(compression=rocksdb.CompressionType.snappy_compression),
+        b'index': rocksdb.ColumnFamilyOptions(compression=codec),
         b'counter': rocksdb.ColumnFamilyOptions(merge_operator=UintAddOperator()),
     }
     if create:
@@ -35,7 +36,7 @@ def batch_path(path):
     return path.with_suffix('.batch')
 
 
-def verify(path, updated=False):
+def verify(path, updated=False, compression='snappy'):
     expected = initial_rows()
     expected[b'wal'] = b'written after compaction'
     expected_index = {b'\xff': b'index value', b'empty': b''}
@@ -45,7 +46,7 @@ def verify(path, updated=False):
         expected[b'\x00\xff'] = b'updated\x00\xff'
         expected[b'batch'] = b'serialized write batch'
         expected_index[b'serialized'] = b'column-family write batch'
-    db = open_db(path)
+    db = open_db(path, compression=compression)
     try:
         assert sorted(handle.name for handle in db.column_families) == [b'counter', b'default', b'index']
         for family, rows in ((None, expected), (db.get_column_family(b'index'), expected_index)):
@@ -70,8 +71,8 @@ def verify(path, updated=False):
         db.close()
 
 
-def create(path):
-    db = open_db(path, create=True)
+def create(path, compression='snappy'):
+    db = open_db(path, create=True, compression=compression)
     try:
         index = db.get_column_family(b'index')
         counter = db.get_column_family(b'counter')
@@ -94,12 +95,12 @@ def create(path):
     finally:
         db.close()
     assert any(path.glob('*.sst')), 'fixture must exercise SST files as well as the WAL'
-    verify(path)
+    verify(path, compression=compression)
 
 
-def update(path):
-    verify(path)
-    db = open_db(path)
+def update(path, compression='snappy'):
+    verify(path, compression=compression)
+    db = open_db(path, compression=compression)
     try:
         db.write(rocksdb.WriteBatch(batch_path(path).read_bytes()), sync=True)
         batch = rocksdb.WriteBatch()
@@ -110,18 +111,19 @@ def update(path):
         db.write(batch, sync=True)
     finally:
         db.close()
-    verify(path, updated=True)
+    verify(path, updated=True, compression=compression)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('create', 'update', 'verify-updated'))
     parser.add_argument('path', type=Path)
+    parser.add_argument('--compression', choices=('snappy', 'zlib', 'lz4', 'lz4hc', 'zstd'), default='snappy')
     args = parser.parse_args()
     if args.action == 'create':
-        create(args.path)
+        create(args.path, compression=args.compression)
     elif args.action == 'update':
-        update(args.path)
+        update(args.path, compression=args.compression)
     else:
-        verify(args.path, updated=True)
+        verify(args.path, updated=True, compression=args.compression)
     print(f'Python {sys.version.split()[0]}: {args.action} passed')

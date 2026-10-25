@@ -7,6 +7,7 @@ FROM python39 AS native
 RUN python -m pip install --disable-pip-version-check --no-cache-dir cmake==3.25.2
 WORKDIR /opt/lbry-rocksdb
 COPY Makefile ./
+COPY patches ./patches
 COPY src/rocksdb ./src/rocksdb
 ARG JOBS=2
 RUN make JOBS="$JOBS"
