@@ -15,6 +15,6 @@ rocksdb/_rocksdb.cpp
 src/rocksdb/*.tar.gz
 src/rocksdb/snappy-1.1.8
 src/rocksdb/bzip2-1.0.8
-src/rocksdb/lz4-1.9.3
+src/rocksdb/lz4-1.10.0
 src/rocksdb/zstd-1.4.9
-src/rocksdb/zlib-1.2.12
+src/rocksdb/zlib-1.3.2
