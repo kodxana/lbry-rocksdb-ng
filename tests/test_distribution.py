@@ -6,7 +6,7 @@ import rocksdb
 
 def test_installed_distribution():
     package = distribution('lbry-rocksdb-ng')
-    assert package.version == rocksdb.__version__ == '0.8.3'
+    assert package.version == rocksdb.__version__ == '0.8.4'
     assert rocksdb.ROCKSDB_VERSION == '6.25.3'
     with pytest.raises(PackageNotFoundError):
         distribution('lbry-rocksdb')
@@ -19,9 +19,9 @@ def test_bundled_licenses():
         'src/rocksdb/LICENSE.Apache',
         'src/rocksdb/LICENSE.leveldb',
         'src/rocksdb/bzip2-1.0.8/LICENSE',
-        'src/rocksdb/lz4-1.9.3/lib/LICENSE',
+        'src/rocksdb/lz4-1.10.0/lib/LICENSE',
         'src/rocksdb/snappy-1.1.8/COPYING',
-        'src/rocksdb/zlib-1.2.12/README',
+        'src/rocksdb/zlib-1.3.2/README',
         'src/rocksdb/zstd-1.4.9/LICENSE',
     ):
         matches = [path for path in package.files if str(path).endswith('/licenses/' + name)]

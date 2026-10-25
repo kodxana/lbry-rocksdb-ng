@@ -59,10 +59,10 @@ if all(map(os.path.exists, STATIC_LIBRARIES)):
     INCLUDE_DIRS = [
         os.path.join("src", "rocksdb", "bzip2-1.0.8"),
         os.path.join("src", "rocksdb", "zstd-1.4.9", "lib"),
-        os.path.join("src", "rocksdb", "zlib-1.2.12"),
+        os.path.join("src", "rocksdb", "zlib-1.3.2"),
         os.path.join("src", "rocksdb", "snappy-1.1.8"),
         os.path.join("src", "rocksdb", "snappy-1.1.8", "build"),
-        os.path.join("src", "rocksdb", "lz4-1.9.3", "lib"),
+        os.path.join("src", "rocksdb", "lz4-1.10.0", "lib"),
         os.path.join("src", "rocksdb", "include"),
     ]
     print("✔️ all static libraries exist in expected locations")
@@ -86,9 +86,9 @@ setup(
         'src/rocksdb/LICENSE.Apache',
         'src/rocksdb/LICENSE.leveldb',
         'src/rocksdb/bzip2-1.0.8/LICENSE',
-        'src/rocksdb/lz4-1.9.3/lib/LICENSE',
+        'src/rocksdb/lz4-1.10.0/lib/LICENSE',
         'src/rocksdb/snappy-1.1.8/COPYING',
-        'src/rocksdb/zlib-1.2.12/README',
+        'src/rocksdb/zlib-1.3.2/README',
         'src/rocksdb/zstd-1.4.9/LICENSE',
     ],
     python_requires=">=3.7.0",
