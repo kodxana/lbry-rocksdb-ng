@@ -1,9 +1,10 @@
 # Releasing lbry-rocksdb-ng
 
-The first maintained distribution is `lbry-rocksdb-ng` 0.8.3. It retains the
-`rocksdb` import and RocksDB 6.25.3 engine, with the merged database-close,
-iterator and snapshot fixes. This release does not upgrade the engine or its
-compression libraries. It does not make concurrent database close and use safe.
+The current maintained distribution is `lbry-rocksdb-ng` 0.8.4. It retains the
+`rocksdb` import and RocksDB 6.25.3 engine, including the database-close,
+iterator and snapshot fixes. The bundled compression libraries receive the
+security updates described in [the release notes](release-notes.md). Callers
+must still synchronize database close with concurrent operations.
 
 ## Supported wheels
 
@@ -31,7 +32,7 @@ submodule checkout and prebuilt native libraries.
 
 1. Review and merge the release PR, including the version and
    `docs/release-notes.md`.
-2. Tag that merged commit `v0.8.3` and push the tag. Do not move an existing
+2. Tag that merged commit `v0.8.4` and push the tag. Do not move an existing
    release tag or reuse a published version.
 3. The release workflow checks that the commit belongs to `master`, rebuilds
    and tests both wheels, checks persistence, and requires the tag to match
@@ -59,7 +60,7 @@ sha256sum --check SHA256SUMS
 For Linux x86-64 with Python 3.9:
 
 ```sh
-python -m pip install --no-index ./wheels/lbry_rocksdb_ng-0.8.3-cp39-cp39-manylinux_2_31_x86_64.whl
+python -m pip install --no-index ./wheels/lbry_rocksdb_ng-0.8.4-cp39-cp39-manylinux_2_31_x86_64.whl
 ```
 
 Python 3.13 uses the `cp313-cp313-manylinux_2_35_x86_64` wheel instead.

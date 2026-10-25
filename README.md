@@ -11,7 +11,7 @@ This binding descends from `python-rocksdb` and `pyrocksdb`, including [updates 
 
 ### Install a release
 
-Version 0.8.3 is available from [GitHub Releases](https://github.com/kodxana/lbry-rocksdb-ng/releases/tag/v0.8.3).
+Version 0.8.4 is available from [GitHub Releases](https://github.com/kodxana/lbry-rocksdb-ng/releases/tag/v0.8.4).
 Download the wheel matching your interpreter and verify it against the release's
 `SHA256SUMS` before installing it. See [installation instructions](docs/releases.md#installing-a-released-wheel)
 for the exact commands, or use the source build below.
